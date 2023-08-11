@@ -53,8 +53,6 @@ bool FileManager::createNullFile(const QString &strFileName, const char &threadC
         file.remove();
     }
 
-    qDebug() << "writelen is ";
-
     bool bOk = file.open(QIODevice::ReadWrite);
     if(!bOk)
     {

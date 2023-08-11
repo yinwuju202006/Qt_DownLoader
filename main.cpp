@@ -1,5 +1,6 @@
 #include "qtdownloader.h"
 #include <QApplication>
+#include"downloaderdatastruct.h"
 
 int main(int argc, char *argv[])
 {

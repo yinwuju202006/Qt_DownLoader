@@ -20,6 +20,47 @@ void NetWorkManager::headInfoFinished()
 
 }
 
+void NetWorkManager::packDataFinished()
+{
+    qDebug() << "  packet finish";
+}
+
+void NetWorkManager::packDataReadyRead()
+{
+    qDebug() << "  packet readyRead";
+//    QByteArray arrayRead = reply->readAll();
+//    qDebug() << " readsize is " << arrayRead.size();
+}
+
+void NetWorkManager::packDataProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+    qDebug() << "  packet packDataProgress";
+}
+
+void NetWorkManager::packDataError(QNetworkReply::NetworkError errCode)
+{
+    qDebug() << "  packet data error=====";
+}
+
+void NetWorkManager::dataDwnLoad_Start(const QString &strUrl, const DownBlockInfo &blockInfo)
+{
+    qDebug() << "  packet url is " << strUrl;
+//    QString strRange;
+//    strRange.sprintf("bytes=%d-%d",blockInfo.nStartPos + blockInfo.nDownLoadedSize,blockInfo.nStartPos + blockInfo.nBlockTotalSize);
+//    qDebug() << " strRange :" << strRange;
+    QNetworkRequest request;
+    request.setUrl(QUrl(strUrl));
+//    request.setRawHeader(QByteArray("Range"),QString("bytes=%1-%2").arg(blockInfo.nStartPos + blockInfo.nDownLoadedSize).arg(blockInfo.nStartPos + blockInfo.nBlockTotalSize).toLocal8Bit());
+    request.setRawHeader(QByteArray("Range"),QString("bytes=1-").toLocal8Bit());
+//    if()
+    reply = manager.get(request);
+
+    connect(reply,&QNetworkReply::finished,this,&NetWorkManager::packDataFinished);
+    connect(reply,&QIODevice::readyRead,this,&NetWorkManager::packDataReadyRead);
+    connect(reply,&QNetworkReply::downloadProgress,this,&NetWorkManager::packDataProgress);
+//    connect(reply,QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),this,&NetWorkManager::packDataError);
+}
+
 void NetWorkManager::getServerInfoByHeader(const QString &downUrl)
 {
     QNetworkRequest request;

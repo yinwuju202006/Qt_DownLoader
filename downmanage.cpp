@@ -1,5 +1,6 @@
 #include<QDebug>
 #include<QThread>
+#include<QThreadPool>
 #include "downmanage.h"
 #include"networkmanager.h"
 #include"filemanager.h"
@@ -10,6 +11,7 @@ DownManage::DownManage(QObject *parent) : QObject(parent)
     m_fileTotalSize = 0;
     m_nThreadCnt = 1;
     netWork = nullptr;
+    m_blockEntryPtr = nullptr;
 }
 
 DownManage::~DownManage()
@@ -19,6 +21,13 @@ DownManage::~DownManage()
         delete netWork;
         netWork = nullptr;
     }
+
+    if( m_blockEntryPtr != nullptr)
+    {
+        delete[] m_blockEntryPtr;
+        m_blockEntryPtr = nullptr;
+    }
+
 }
 
 void DownManage::downloadWork(const QString &srcUrl, const QString &saveDir, const qint16 &threadCnt)
@@ -38,6 +47,7 @@ void DownManage::downloadWork(const QString &srcUrl, const QString &saveDir, con
     connect(netWork,&NetWorkManager::notifyServerHeadInfo,this,&DownManage::receiveRemoteSiteInfo);
 
     emit notify_getHeadInfo(srcUrl);
+
 }
 
 void DownManage::receiveRemoteSiteInfo(const RemoteSiteInfo &sitInfo)
@@ -60,11 +70,34 @@ void DownManage::receiveRemoteSiteInfo(const RemoteSiteInfo &sitInfo)
    {
        return;
    }
-   m_blockEntryPtr = new DownBlockEntry[m_nThreadCnt];
+   m_strFileName = strFullFileName;
+   if(m_blockEntryPtr != nullptr)
+   {
+       delete[] m_blockEntryPtr;
+       m_blockEntryPtr = nullptr;
+   }
+//   m_blockEntryPtr = new DownBlockEntry[m_nThreadCnt];
    // assign the download task
-    for(int nIndex = 0;nIndex < m_nThreadCnt;nIndex++)
-    {
 
-    }
+   qint32 nBlockSize = m_fileTotalSize / m_nThreadCnt;
+   for (int nIndex = 0; nIndex < m_nThreadCnt; nIndex++)
+   {
+       DownBlockInfo blockInfo;
+       if (nIndex == m_nThreadCnt - 1)
+       {
+           blockInfo.nStartPos = nBlockSize * nIndex;
+           blockInfo.nBlockTotalSize = m_fileTotalSize - (nBlockSize * nIndex);
+       }
+       else
+       {
+           blockInfo.nStartPos = nBlockSize * nIndex;
+           blockInfo.nBlockTotalSize = nBlockSize;
+       }
+       DownBlockEntry* entry = new DownBlockEntry();
+       entry->m_strDownUrl = m_strUrl;
+       entry->m_fileOper.setFileName(m_strFileName);
+       entry->m_blockInfo = blockInfo;
+       QThreadPool::globalInstance()->start(entry);
+   }
 
 }

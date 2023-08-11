@@ -5,14 +5,12 @@
 #include"networkmanager.h"
 #include"downloaderdatastruct.h"
 #include"downblockentry.h"
-
 class DownManage : public QObject
 {
     Q_OBJECT
 public:
     explicit DownManage(QObject *parent = nullptr);
-    ~DownManage();
-
+    ~DownManage();  
 signals:
     void notify_getHeadInfo(const QString& url);
 public slots:
@@ -27,6 +25,7 @@ private:
     char m_nThreadCnt;
     QString m_strUrl;
     QString m_strSaveDir;
+    QString m_strFileName;
     DownBlockEntry* m_blockEntryPtr;
 };
 

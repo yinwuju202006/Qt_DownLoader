@@ -22,6 +22,17 @@ struct FileTotalInfo
     }
     unsigned long long nFileTotalSize;
     unsigned char nThreadCnt;
+
+    FileTotalInfo& operator=(const FileTotalInfo& info)
+    {
+        if(this == &info)
+        {
+            return *this;
+        }
+        this->nFileTotalSize = info.nFileTotalSize;
+        this->nThreadCnt = info.nThreadCnt;
+        return *this;
+    }
 };
 
 struct DownBlockInfo
@@ -31,8 +42,19 @@ struct DownBlockInfo
         nStartPos = 0;
         nBlockTotalSize = 0;
         nDownLoadedSize = 0;
-
     }
+
+   DownBlockInfo& operator= (const DownBlockInfo& info)
+   {
+       if(this == & info)
+       {
+           return *this;
+       }
+       this->nBlockTotalSize = info.nBlockTotalSize;
+       this->nStartPos = info.nStartPos;
+       this->nDownLoadedSize = info.nDownLoadedSize;
+       return *this;
+   }
     unsigned long long nStartPos;
     unsigned long long nBlockTotalSize;
     unsigned long long nDownLoadedSize;

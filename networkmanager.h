@@ -20,6 +20,11 @@ signals:
 public slots:
     void getServerInfoByHeader(const QString& downUrl);
     void headInfoFinished();
+    void packDataFinished();
+    void packDataReadyRead();
+    void packDataProgress(qint64 bytesReceived, qint64 bytesTotal);
+    void packDataError(QNetworkReply::NetworkError errCode);
+    void dataDwnLoad_Start(const QString& strUrl,const DownBlockInfo& blockInfo);
 
 private:
     QNetworkAccessManager manager;
